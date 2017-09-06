@@ -23,3 +23,10 @@ func TestCheckMac(t *testing.T) {
 		t.Error("diff")
 	}
 }
+
+func TestGenRsaKey(t *testing.T) {
+	err := GenRsaKey(2048)
+	if err != nil {
+		t.Error(err)
+	}
+}

@@ -85,15 +85,21 @@ func EncryptPrivateKey(pemPath, fileName string, password []byte) error {
 //DecryptPrivateKey 解密私钥
 func DecryptPrivateKey(pemPath string, password []byte) (*rsa.PrivateKey, error) {
 	encrypted, err := ioutil.ReadFile(pemPath)
-	b, _ := pem.Decode(encrypted)
-	clear, err := x509.DecryptPEMBlock(b, password)
 	if err != nil {
 		return nil, err
 	}
-	return x509.ParsePKCS1PrivateKey(clear) //解析成RSA私钥
+	b, _ := pem.Decode(encrypted)
+	data := b.Bytes
+	if len(password) != 0 {
+		data, err = x509.DecryptPEMBlock(b, password)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return x509.ParsePKCS1PrivateKey(data) //解析成RSA私钥
 }
 
-//ParsePublicKey 从pem文件获取公钥
+//RetrievePublicKey 从pem文件获取公钥
 func RetrievePublicKey(pemPath string) (*rsa.PublicKey, error) {
 	data, err := ioutil.ReadFile(pemPath)
 	block, _ := pem.Decode(data)
